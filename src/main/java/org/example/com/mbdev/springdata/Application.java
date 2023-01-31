@@ -8,6 +8,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.transaction.Transactional;
+import java.beans.Transient;
 import java.util.Map;
 
 @SpringBootApplication
@@ -20,6 +22,7 @@ public class Application implements CommandLineRunner {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private AccountRepository accountRepository;
+    @Transactional
     @Override
     public void run(String... args) throws Exception {
 //        jdbcTemplate.execute("INSERT INTO Account (id, name, email, bill)" +
@@ -35,10 +38,17 @@ public class Application implements CommandLineRunner {
 
         System.out.println(accountRepository.findAccountByBill(4000));
         System.out.println(accountRepository.findAccountByName("Lori5"));
-        System.out.println(accountRepository.findAccountByNameAndBill("Lori6", 12000+));
+        System.out.println(accountRepository.findAccountByNameAndBill("Lori6", 12000));
+
+        accountRepository.setNameFor(Long.valueOf(7), "Misha");
+        System.out.println(accountRepository.findAccountByBill(14000));
+
+
     }
     private Account findAccountById(Long accountId) {
         String query = "SELECT * FROM Account WHERE id=%s";
+
+
         Map<String, Object> resultSet = jdbcTemplate.queryForMap(String.format(query, accountId));
         Account account = new Account();
         account.setId(accountId);
